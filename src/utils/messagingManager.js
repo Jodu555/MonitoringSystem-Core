@@ -27,9 +27,9 @@ function startListening() {
         });
 
         socket.on('auth', (data) => {
-            if (data.authorization_key) {
+            if (data.auth_token) {
                 //TODO: DO Database Stuff to get serverUUID by key
-                cliets.get(socket.id).serverUUID = 'test';
+                clients.get(socket.id).serverUUID = 'test';
                 socket.emit('auth', true);
             } else {
                 socket.emit('auth', false);
