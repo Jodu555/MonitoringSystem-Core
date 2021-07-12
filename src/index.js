@@ -9,6 +9,8 @@ const { jsonSuccess, jsonError } = require('./utils/jsonMessages');
 const dotenv = require('dotenv').config();
 const Database = require('./database/Database');
 const authManager = require('./utils/authManager');
+const messagingManager = require('./utils/messagingManager');
+
 
 const database = new Database();
 database.connect();
@@ -20,11 +22,12 @@ const server = http.createServer(app);
 
 const io = new Server(server);
 
+messagingManager.setIO(io);
+
 app.use(cors());
 app.use(morgan('tiny'));
 app.use(helmet());
 app.use(express.json());
-
 
 
 app.use('/auth', auth);
@@ -33,7 +36,7 @@ app.get('/', authManager.authentication, (req, res) => {
     res.json(jsonSuccess('Basic Auth API works just fine!'));
 });
 
-const PORT = process.env.PORT || 3100;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Express App Listening on PORT`);
 });
