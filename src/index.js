@@ -10,7 +10,8 @@ app.use(morgan('tiny'));
 app.use(helmet());
 app.use(express.json());
 
-const defaultDataInterval = 10 * 1000; //1 Minute
+const PERSISTENT_DataInterval = 60 * 1000; //1 Hour
+const CHANGE_DataInterval = 10 * 1000; //1 Minute
 const PERSISTENT_DATA = 'PERSISTENT_DATA';
 const CHANGE_DATA = 'CHANGE_DATA';
 
@@ -34,7 +35,9 @@ io.on('connection', (socket) => {
     });
     socket.on('data', (data) => {
         if (data.type == PERSISTENT_DATA) {
-            console.log(data);
+            console.log('Persistent:', data);
+        } else {
+            console.log('Change:', data);
         }
     });
     if (!clients.has(socket.id))
@@ -45,7 +48,15 @@ setInterval(() => {
     clients.forEach((socket, id) => {
         socket.emit('action', PERSISTENT_DATA);
     });
-}, defaultDataInterval);
+}, PERSISTENT_DataInterval);
+
+setInterval(() => {
+    clients.forEach((socket, id) => {
+        socket.emit('action', CHANGE_DATA);
+    });
+}, CHANGE_DataInterval);
+
+
 
 
 const PORT = process.env.PORT || 3000;
