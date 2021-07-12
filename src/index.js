@@ -10,7 +10,7 @@ app.use(morgan('tiny'));
 app.use(helmet());
 app.use(express.json());
 
-const PERSISTENT_DataInterval = 60 * 1000; //1 Hour
+const PERSISTENT_DataInterval = 60 * 10 * 1000; //1 Hour
 const CHANGE_DataInterval = 10 * 1000; //1 Minute
 const PERSISTENT_DATA = 'PERSISTENT_DATA';
 const CHANGE_DATA = 'CHANGE_DATA';
@@ -26,35 +26,7 @@ app.get('/', (req, res) => {
     })
 });
 
-const clients = new Map();
 
-io.on('connection', (socket) => {
-    console.log('A client connected');
-    socket.on('disconnect', () => {
-        clients.delete(socket.id);
-    });
-    socket.on('data', (data) => {
-        if (data.type == PERSISTENT_DATA) {
-            console.log('Persistent:', data);
-        } else {
-            console.log('Change:', data);
-        }
-    });
-    if (!clients.has(socket.id))
-        clients.set(socket.id, socket);
-});
-
-setInterval(() => {
-    clients.forEach((socket, id) => {
-        socket.emit('action', PERSISTENT_DATA);
-    });
-}, PERSISTENT_DataInterval);
-
-setInterval(() => {
-    clients.forEach((socket, id) => {
-        socket.emit('action', CHANGE_DATA);
-    });
-}, CHANGE_DataInterval);
 
 
 
