@@ -36,30 +36,31 @@ function startListening() {
             }
         });
 
-        if (!lookup_IPS.has(socket.remoteAddress)) {
-            lookup_IPS.set(socket.remoteAddress, socket);
+        if (!lookup_IPS.has(socket.handshake.address)) {
+            lookup_IPS.set(socket.handshake.address, socket);
             clients.set(socket.id, {
+                socket: socket,
                 socketID: socket.id,
-                socketIP: socket.remoteAddress,
+                socketIP: socket.handshake.address,
                 serverUUID: null,
             });
         }
     });
+
+    setInterval(() => {
+        clients.forEach((info, id) => {
+            info.socket.emit('action', PERSISTENT_DATA);
+        });
+    }, PERSISTENT_DataInterval);
+
+    setInterval(() => {
+        console.log(clients);
+        clients.forEach((info, id) => {
+            info.socket.emit('action', CHANGE_DATA);
+        });
+    }, CHANGE_DataInterval);
+
 }
-
-
-setInterval(() => {
-    clients.forEach((socket, info) => {
-        socket.emit('action', PERSISTENT_DATA);
-    });
-}, PERSISTENT_DataInterval);
-
-setInterval(() => {
-    clients.forEach((socket, info) => {
-        console.log(info);
-        socket.emit('action', CHANGE_DATA);
-    });
-}, CHANGE_DataInterval);
 
 module.exports = {
     setIO
