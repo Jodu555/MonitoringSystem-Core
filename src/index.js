@@ -1,37 +1,39 @@
-const express = require('express');
 const http = require('http');
+const express = require('express');
+const { Server } = require("socket.io");
 const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
+const { router: auth, setDatabase: auth_setDatabase } = require('./routes/auth');
+const { jsonSuccess, jsonError } = require('./utils/jsonMessages');
+const dotenv = require('dotenv').config();
+const Database = require('./database/Database');
+const authManager = require('./utils/authManager');
+
+const database = new Database();
+database.connect();
+
+auth_setDatabase(database);
 
 const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server);
+
 app.use(cors());
 app.use(morgan('tiny'));
 app.use(helmet());
 app.use(express.json());
 
-const PERSISTENT_DataInterval = 60 * 10 * 1000; //1 Hour
-const CHANGE_DataInterval = 10 * 1000; //1 Minute
-const PERSISTENT_DATA = 'PERSISTENT_DATA';
-const CHANGE_DATA = 'CHANGE_DATA';
 
 
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+app.use('/auth', auth);
 
-app.get('/', (req, res) => {
-    res.json({
-        message: 'Monitoring API works just fine!',
-    })
+app.get('/', authManager.authentication, (req, res) => {
+    res.json(jsonSuccess('Basic Auth API works just fine!'));
 });
 
-
-
-
-
-
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3100;
 server.listen(PORT, () => {
     console.log(`Express App Listening on PORT`);
 });
