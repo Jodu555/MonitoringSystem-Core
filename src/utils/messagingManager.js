@@ -14,7 +14,6 @@ function setIO(_io) {
 
 function startListening() {
     io.on('connection', (socket) => {
-        console.log(socket);
         console.log('A client connected');
         socket.on('disconnect', () => {
             clients.delete(socket.id);
@@ -27,6 +26,15 @@ function startListening() {
             }
         });
 
+        socket.on('auth', (data) => {
+            if (data.authorization_key) {
+                //TODO: DO Database Stuff to get serverUUID by key
+                cliets.get(socket.id).serverUUID = 'test';
+                socket.emit('auth', true);
+            } else {
+                socket.emit('auth', false);
+            }
+        });
 
         if (!lookup_IPS.has(socket.remoteAddress)) {
             lookup_IPS.set(socket.remoteAddress, socket);
@@ -48,6 +56,7 @@ setInterval(() => {
 
 setInterval(() => {
     clients.forEach((socket, info) => {
+        console.log(info);
         socket.emit('action', CHANGE_DATA);
     });
 }, CHANGE_DataInterval);
