@@ -24,8 +24,9 @@ class Database {
 			}
 		});
 
-		//Setup all databases here
+		//Setup all databases here (auth, server, log, data)
 		this.authDatabase = new thingDatabase('accounts', 'Auth', this, this.connection);
+		this.serverDatabase = new thingDatabase('server', 'Server', this, this.connection);
 	}
 
 	disconnect() {
@@ -42,6 +43,10 @@ class Database {
 
 	get getAuth() {
 		return this.authDatabase;
+	}
+
+	get getServer() {
+		return this.serverDatabase;
 	}
 }
 
