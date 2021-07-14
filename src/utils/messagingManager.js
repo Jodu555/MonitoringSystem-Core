@@ -16,6 +16,8 @@ function startListening() {
     io.on('connection', (socket) => {
         console.log('A client connected');
         socket.on('disconnect', () => {
+            console.log('Client disconnected');
+            lookup_IPS.delete(socket.handshake.address);
             clients.delete(socket.id);
         });
         socket.on('data', (data) => {
