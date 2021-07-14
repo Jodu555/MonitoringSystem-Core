@@ -54,7 +54,6 @@ function startListening() {
     }, PERSISTENT_DataInterval);
 
     setInterval(() => {
-        console.log(clients);
         clients.forEach((info, id) => {
             info.socket.emit('action', CHANGE_DATA);
         });
