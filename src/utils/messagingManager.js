@@ -1,4 +1,4 @@
-const PERSISTENT_DataInterval = 60 * 10 * 1000; //1 Hour
+const PERSISTENT_DataInterval = 1 * 10 * 1000; //1 Hour
 const CHANGE_DataInterval = 1000 * 10 * 1000; //1 Minute
 const PERSISTENT_DATA = 'PERSISTENT_DATA';
 const CHANGE_DATA = 'CHANGE_DATA';
@@ -32,29 +32,11 @@ function startListening() {
                     const server = servers[0];
                     const datas = await database.getData.get({ UUID: server.data_UUID });
                     if (datas.length > 0) {
-                        console.log('Update');
-                        await database.getData.update({ UUID: server.data_UUID }, {
-                            hostname: data.host.hostname,
-                            uptime: 0,
-                            platform: data.host.platform,
-                            platform_type: data.host.platformType,
-                            username: data.host.username,
-                            homedir: data.host.homedir,
-                            ips: JSON.stringify(data.ips),
-                        });
-
+                        const obj = persistentDataToDatabaseModel(data);
+                        delete obj.UUID;
+                        await database.getData.update({ UUID: server.data_UUID }, obj);
                     } else {
-                        console.log('Creation');
-                        await database.getData.create({
-                            UUID: server.data_UUID,
-                            hostname: data.host.hostname,
-                            uptime: 0,
-                            platform: data.host.platform,
-                            platform_type: data.host.platformType,
-                            username: data.host.username,
-                            homedir: data.host.homedir,
-                            ips: JSON.stringify(data.ips),
-                        });
+                        await database.getData.create(persistentDataToDatabaseModel(data));
                     }
                 }
 
@@ -99,6 +81,19 @@ function startListening() {
         });
     }, CHANGE_DataInterval);
 
+}
+
+function persistentDataToDatabaseModel(data) {
+    return {
+        UUID: server.data_UUID,
+        hostname: data.host.hostname,
+        uptime: 0,
+        platform: data.host.platform,
+        platform_type: data.host.platformType,
+        username: data.host.username,
+        homedir: data.host.homedir,
+        ips: JSON.stringify(data.ips),
+    };
 }
 
 module.exports = {
