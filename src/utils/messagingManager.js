@@ -1,5 +1,5 @@
 const PERSISTENT_DataInterval = 60 * 10 * 1000; //1 Hour
-const CHANGE_DataInterval = 10 * 1000; //1 Minute
+const CHANGE_DataInterval = 1000 * 10 * 1000; //1 Minute
 const PERSISTENT_DATA = 'PERSISTENT_DATA';
 const CHANGE_DATA = 'CHANGE_DATA';
 
@@ -7,8 +7,10 @@ const lookup_IPS = new Map();
 const clients = new Map();
 
 let io = null;
-function setIO(_io) {
+let database = null;
+function setup(_io, _database) {
     io = _io;
+    database = _database;
     startListening();
 }
 
@@ -22,20 +24,52 @@ function startListening() {
             clients.delete(socket.id);
         });
 
-        socket.on('data', (data) => {
+        socket.on('data', async (data) => {
             if (data.type == PERSISTENT_DATA) {
                 console.log('Persistent:', data);
+                const servers = await database.getServer.get({ UUID: clients.get(socket.id).serverUUID });
+                if (servers.length > 0) {
+                    const server = servers[0];
+                    const datas = await database.getData.get({ UUID: server.data_UUID });
+                    if (datas.length > 0) {
+                        console.log('Update');
+                        await database.getData.update({ UUID: server.data_UUID }, {
+                            hostname: data.host.hostname,
+                            uptime: 0,
+                            platform: data.host.platform,
+                            platform_type: data.host.platformType,
+                            username: data.host.username,
+                            homedir: data.host.homedir,
+                            ips: JSON.stringify(data.ips),
+                        });
+
+                    } else {
+                        console.log('Creation');
+                        await database.getData.create({
+                            UUID: server.data_UUID,
+                            hostname: data.host.hostname,
+                            uptime: 0,
+                            platform: data.host.platform,
+                            platform_type: data.host.platformType,
+                            username: data.host.username,
+                            homedir: data.host.homedir,
+                            ips: JSON.stringify(data.ips),
+                        });
+                    }
+                }
+
             } else {
                 console.log('Change:', data);
             }
         });
 
-        socket.on('auth', (data) => {
+        socket.on('auth', async (data) => {
             if (data.auth_token) {
-                const servers = await database.getServer.get({ authorization_key: auth_token });
-                if (servers.length > 1) {
+                const servers = await database.getServer.get({ authorization_key: data.auth_token });
+                if (servers.length > 0) {
                     clients.get(socket.id).serverUUID = servers[0].UUID;
                     socket.emit('auth', true);
+                    socket.emit('action', PERSISTENT_DATA);
                 }
             } else {
                 socket.emit('auth', false);
@@ -68,5 +102,5 @@ function startListening() {
 }
 
 module.exports = {
-    setIO
+    setup
 };

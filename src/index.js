@@ -22,7 +22,7 @@ const server = http.createServer(app);
 
 const io = new Server(server);
 
-messagingManager.setIO(io);
+messagingManager.setup(io, database);
 
 app.use(cors());
 app.use(morgan('tiny'));
