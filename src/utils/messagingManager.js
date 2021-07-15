@@ -1,5 +1,5 @@
-const PERSISTENT_DataInterval = 1 * 10 * 1000; //1 Hour
-const CHANGE_DataInterval = 1000 * 10 * 1000; //1 Minute
+const PERSISTENT_DataInterval = 60 * 10 * 1000; //1 Hour
+const CHANGE_DataInterval = 1 * 10 * 1000; //1 Minute
 const PERSISTENT_DATA = 'PERSISTENT_DATA';
 const CHANGE_DATA = 'CHANGE_DATA';
 
@@ -25,23 +25,29 @@ function startListening() {
         });
 
         socket.on('data', async (data) => {
+            const servers = await database.getServer.get({ UUID: clients.get(socket.id).serverUUID });
+            if (!servers.length > 0) {
+                return;
+            }
+            const server = servers[0];
             if (data.type == PERSISTENT_DATA) {
-                console.log('Persistent:', data);
-                const servers = await database.getServer.get({ UUID: clients.get(socket.id).serverUUID });
-                if (servers.length > 0) {
-                    const server = servers[0];
-                    const datas = await database.getData.get({ UUID: server.data_UUID });
-                    if (datas.length > 0) {
-                        const obj = persistentDataToDatabaseModel(data);
-                        delete obj.UUID;
-                        await database.getData.update({ UUID: server.data_UUID }, obj);
-                    } else {
-                        await database.getData.create(persistentDataToDatabaseModel(data));
-                    }
-                }
 
-            } else {
+                const datas = await database.getData.get({ UUID: server.data_UUID });
+                if (datas.length > 0) {
+                    const obj = persistentDataToDatabaseModel(data);
+                    delete obj.uptime;
+                    await database.getData.update({ UUID: server.data_UUID }, obj);
+                } else {
+                    const obj = persistentDataToDatabaseModel(data);
+                    obj.UUID = server.data_UUID;
+                    await database.getData.create();
+                }
+            } else if (data.type == CHANGE_DATA) {
                 console.log('Change:', data);
+                const obj = changeDataToDatabaseModel(data);
+                obj.server_UUID = server.UUID;
+                await database.getLog.create(obj);
+                await database.getData.update({ UUID: server.data_UUID }, { uptime: data.uptime });
             }
         });
 
@@ -64,8 +70,10 @@ function startListening() {
                 socket: socket,
                 socketID: socket.id,
                 socketIP: socket.handshake.address,
-                serverUUID: null,
+                serverUUID: '',
             });
+        } else {
+            socket.emit('auth', false);
         }
     });
 
@@ -83,9 +91,18 @@ function startListening() {
 
 }
 
+function changeDataToDatabaseModel(data) {
+
+    return {
+        time: Date.now(),
+        used_memory: data.memory.current,
+        max_memory: data.memory.total,
+        cpu_usage: data.cpu
+    }
+}
+
 function persistentDataToDatabaseModel(data) {
     return {
-        UUID: server.data_UUID,
         hostname: data.host.hostname,
         uptime: 0,
         platform: data.host.platform,

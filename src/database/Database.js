@@ -28,6 +28,7 @@ class Database {
 		this.authDatabase = new thingDatabase('accounts', 'Auth', this, this.connection);
 		this.serverDatabase = new thingDatabase('server', 'Server', this, this.connection);
 		this.dataDatabase = new thingDatabase('data', 'Data', this, this.connection);
+		this.logDatabase = new thingDatabase('log', 'Log', this, this.connection);
 	}
 
 	disconnect() {
@@ -52,6 +53,10 @@ class Database {
 
 	get getData() {
 		return this.dataDatabase;
+	}
+
+	get getLog() {
+		return this.logDatabase;
 	}
 }
 
