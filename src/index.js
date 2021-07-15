@@ -37,8 +37,6 @@ app.get('/', authManager.authentication, (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
     console.log(`Express App Listening on PORT`);
-
-    // database.getServer().get
 });

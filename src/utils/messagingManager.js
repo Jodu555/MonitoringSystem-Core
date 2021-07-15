@@ -15,11 +15,13 @@ function setIO(_io) {
 function startListening() {
     io.on('connection', (socket) => {
         console.log('A client connected');
+
         socket.on('disconnect', () => {
             console.log('Client disconnected');
             lookup_IPS.delete(socket.handshake.address);
             clients.delete(socket.id);
         });
+
         socket.on('data', (data) => {
             if (data.type == PERSISTENT_DATA) {
                 console.log('Persistent:', data);
@@ -30,9 +32,11 @@ function startListening() {
 
         socket.on('auth', (data) => {
             if (data.auth_token) {
-                //TODO: DO Database Stuff to get serverUUID by key
-                clients.get(socket.id).serverUUID = 'test';
-                socket.emit('auth', true);
+                const servers = await database.getServer.get({ authorization_key: auth_token });
+                if (servers.length > 1) {
+                    clients.get(socket.id).serverUUID = servers[0].UUID;
+                    socket.emit('auth', true);
+                }
             } else {
                 socket.emit('auth', false);
             }
