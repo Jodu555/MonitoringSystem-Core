@@ -13,7 +13,12 @@ const userLoginSchema = Joi.object({
 }).xor('username', 'email');
 
 
+const serverCreationSchema = Joi.object({
+    name: Joi.string().alphanum().min(3).max(30).required(),
+});
+
 module.exports = {
     userRegisterSchema,
-    userLoginSchema
+    userLoginSchema,
+    serverCreationSchema
 };

@@ -8,3 +8,5 @@ Database
 
 ## Todo
 * [ ] Add in each table created_AT
+* [ ] Add the server routes
+* [ ] Add the data routes
