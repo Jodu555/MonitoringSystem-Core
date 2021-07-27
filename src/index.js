@@ -12,6 +12,10 @@ const Database = require('./database/Database');
 const authManager = require('./utils/authManager');
 const messagingManager = require('./utils/messagingManager');
 
+authManager.addToken('SECRET-DEV-KEY', {
+    UUID: '245aa5b8-7ddb-492b-8be1-e8d51b421dbf',
+})
+
 const database = new Database();
 database.connect();
 auth_setDatabase(database);

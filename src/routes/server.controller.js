@@ -8,9 +8,10 @@ const setDatabase = (_database) => {
 };
 
 const getAll = async (req, res, next) => {
-    const userUUID = req.credentials.user.UUID;
-    database.getServer.get({ unique: true, });
-    res.json(jsonSuccess('Test'));
+    const servers = await database.getServer.get({ account_UUID: req.credentials.user.UUID, });
+    const response = jsonSuccess('Success');
+    response.data = servers;
+    res.json(response);
 };
 
 module.exports = {
