@@ -12,18 +12,14 @@ const Database = require('./database/Database');
 const authManager = require('./utils/authManager');
 const messagingManager = require('./utils/messagingManager');
 
-
 const database = new Database();
 database.connect();
-
 auth_setDatabase(database);
 server_setDatabase(database);
 
 const app = express();
 const server = http.createServer(app);
-
 const io = new Server(server);
-
 messagingManager.setup(io, database);
 
 app.use(cors());
@@ -41,5 +37,5 @@ app.get('/', authManager.authentication, (req, res) => {
 
 const PORT = process.env.PORT || 3100;
 server.listen(PORT, async () => {
-    console.log(`Express App Listening on PORT`);
+    console.log(`Express App Listening on ${PORT}`);
 });

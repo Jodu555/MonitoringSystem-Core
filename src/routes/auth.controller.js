@@ -49,7 +49,7 @@ const login = async (req, res, next) => {
             const obj = jsonSuccess('Successfully logged In');
             const token = v4();
             obj.token = token;
-            authManager.addToken(token, user)
+            authManager.addToken(token, result[0]);
             res.json(obj);
         } else {
             const value = user.username ? 'username' : 'email';

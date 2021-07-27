@@ -10,11 +10,7 @@ function setDatabase(_database) {
     controller.setDatabase(database);
 }
 
-router.get('/', (req, res) => {
-    console.log('Test');
-});
-
-// router.get('/', authentication, controller.getAll); //Get All
+router.get('/', authentication, controller.getAll); //Get All
 // router.get('/:uuid', null); //Get by UUID
 // router.post('/', null); //Create a new
 // router.patch('/:uuid', null); //Update by UUID

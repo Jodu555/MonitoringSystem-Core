@@ -8,7 +8,7 @@ const setDatabase = (_database) => {
 };
 
 const getAll = async (req, res, next) => {
-    console.log(req.credentials.user);
+    const userUUID = req.credentials.user.UUID;
     database.getServer.get({ unique: true, });
     res.json(jsonSuccess('Test'));
 };
