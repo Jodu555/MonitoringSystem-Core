@@ -11,23 +11,23 @@ const setDatabase = (_database) => {
 
 const register = async (req, res, next) => {
     const validation = userRegisterSchema.validate(req.body);
-    if(validation.error) {
+    if (validation.error) {
         res.json(jsonError(validation.error.details[0].message));
     } else {
         const user = validation.value
-        const search = {...user}; //Spreading to disable the reference
+        const search = { ...user }; //Spreading to disable the reference
         delete search.password;
         search.unique = true;
         const result = await database.getAuth.getUser(search);
 
-        if(result.length == 0) {
+        if (result.length == 0) {
             const obj = jsonSuccess('Registered');
             const token = generateVerificationToken();
             user.verificationToken = token;
             user.uuid = v4();
             await database.getAuth.createUser(user);
             sendVerificationMessage(user.username, user.email, token);
-    
+
             delete user.password;
             delete user.verificationToken;
             obj.user = user;
@@ -40,12 +40,12 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     const validation = userLoginSchema.validate(req.body);
-    if(validation.error) {
+    if (validation.error) {
         res.json(jsonError(validation.error.details[0].message));
     } else {
         const user = validation.value;
-        const result = await database.getAuth.getUser({...user, unique: true});
-        if(result.length > 0) {
+        const result = await database.getAuth.getUser({ ...user, unique: true });
+        if (result.length > 0) {
             const obj = jsonSuccess('Successfully logged In');
             const token = v4();
             obj.token = token;
@@ -65,8 +65,8 @@ const emailValidation = async (req, res, next) => {
         verificationToken: token,
         verified: 'false',
     });
-    if(result.length > 0) {
-        const user = await database.getAuth.updateUser({uuid: result[0].UUID}, {verified: 'true', verificationToken: ''});
+    if (result.length > 0) {
+        const user = await database.getAuth.updateUser({ uuid: result[0].UUID }, { verified: 'true', verificationToken: '' });
         const response = jsonSuccess('Valid Token! Account verified!');
         response.user = user[0];
         delete response.user.password;
@@ -74,7 +74,7 @@ const emailValidation = async (req, res, next) => {
     } else {
         res.json(jsonError('Invalid Token please Try Again!'));
     }
-    
+
 };
 
 function generateVerificationToken() {
