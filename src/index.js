@@ -33,7 +33,7 @@ app.use(express.json());
 
 
 app.use('/auth', auth);
-app.use('/server', serv);
+app.use('/server', authManager.authentication, serv);
 
 app.get('/', authManager.authentication, (req, res) => {
     res.json(jsonSuccess('Basic Auth API works just fine!'));

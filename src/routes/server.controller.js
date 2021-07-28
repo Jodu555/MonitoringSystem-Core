@@ -14,7 +14,17 @@ const getAll = async (req, res, next) => {
     res.json(response);
 };
 
+
+const get = async (req, res, next) => {
+    const uuid = req.params.uuid;
+    const servers = await database.getServer.get({ unique: true, account_UUID: req.credentials.user.UUID, UUID: uuid });
+    const response = jsonSuccess('Success');
+    response.data = servers;
+    res.json(response);
+}
+
 module.exports = {
     setDatabase,
     getAll,
+    get,
 }

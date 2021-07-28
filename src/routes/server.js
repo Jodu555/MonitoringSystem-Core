@@ -10,8 +10,8 @@ function setDatabase(_database) {
     controller.setDatabase(database);
 }
 
-router.get('/', authentication, controller.getAll); //Get All
-// router.get('/:uuid', null); //Get by UUID
+router.get('/', controller.getAll); //Get All
+router.get('/:uuid', controller.get); //Get by UUID
 // router.post('/', null); //Create a new
 // router.patch('/:uuid', null); //Update by UUID
 
