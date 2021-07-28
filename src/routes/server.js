@@ -13,7 +13,7 @@ function setDatabase(_database) {
 router.get('/', controller.getAll); //Get All
 router.get('/:uuid', controller.get); //Get by UUID
 router.post('/', controller.create); //Create a new
-// router.patch('/:uuid', null); //Update by UUID
+router.patch('/:uuid', controller.patch); //Update by UUID
 
 module.exports = {
     router,

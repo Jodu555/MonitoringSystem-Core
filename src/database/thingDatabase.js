@@ -38,6 +38,7 @@ class thingDatabase {
 	}
 
 	//TODO: Update Things function (to update multiple thinghs)
+	//TODO: Update with more than one search
 	async update(search, thing) {
 		try {
 			removeKeyFromObject(thing, 'uuid');
@@ -59,10 +60,10 @@ class thingDatabase {
 			let query = 'UPDATE ' + this.table_name + ' SET ';
 			const part = queryPartGeneration(thing);
 			query += part.query;
-			query += ' WHERE UUID = ?';
+			const parts = queryPartGeneration(search);
+			query += ' WHERE ' + parts.query;
 
-			const values = part.values;
-			values.push(uuid);
+			const values = part.values.concat(parts.values);
 
 			this.connection.query(query, values, (error, results, fields) => {
 				if (error) {

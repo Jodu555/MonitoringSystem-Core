@@ -50,6 +50,25 @@ const create = async (req, res, next) => {
     }
 }
 
+const patch = async (req, res, next) => {
+    const uuid = req.params.uuid;
+    const validation = serverCreationSchema.validate(req.body);
+    if (validation.error) {
+        res.json(jsonError(validation.error.details[0].message));
+    } else {
+        const server = validation.value;
+        const servers = await database.getServer.get({ unique: true, account_UUID: req.credentials.user.UUID, uuid });
+        if (servers.length > 0) {
+            const updated = await database.getServer.update({ unique: true, UUID: uuid, account_UUID: req.credentials.user.UUID }, { name: server.name });
+            const response = jsonSuccess('Success');
+            response.data = updated;
+            res.json(response);
+        } else {
+            res.json(jsonError('Server with that uuid doesnt exists!'));
+        }
+    }
+}
+
 function generateVerificationToken(len) {
     let token = '';
     for (let i = 0; i < len; i++) {
@@ -64,4 +83,5 @@ module.exports = {
     getAll,
     get,
     create,
+    patch,
 }
