@@ -8,5 +8,6 @@ Database
 
 ## Todo
 * [ ] Add in each table created_AT
-* [ ] Add the server routes
+* [x] Add the server routes
 * [ ] Add the data routes
+* [ ] Clarify the socket connection front to back to slave and so on
