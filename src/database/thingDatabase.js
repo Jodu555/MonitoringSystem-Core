@@ -38,7 +38,6 @@ class thingDatabase {
 	}
 
 	//TODO: Update Things function (to update multiple thinghs)
-	//TODO: Update with more than one search
 	async update(search, thing) {
 		try {
 			removeKeyFromObject(thing, 'uuid');
