@@ -22,7 +22,7 @@ const register = async (req, res, next) => {
 
         if (result.length == 0) {
             const obj = jsonSuccess('Registered');
-            const token = generateVerificationToken();
+            const token = generateVerificationToken(7);
             user.verificationToken = token;
             user.uuid = v4();
             await database.getAuth.create(user);
@@ -77,9 +77,9 @@ const emailValidation = async (req, res, next) => {
 
 };
 
-function generateVerificationToken() {
+function generateVerificationToken(len) {
     let token = '';
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < len; i++) {
         token += v4();
     }
     token = token.split('-').join('');
