@@ -64,6 +64,12 @@ const login = async (req, res, next) => {
     }
 };
 
+const logout = async (req, res, next) => {
+    const token = req.credentials.token;
+    authManager.removeToken(token);
+    res.json(jsonSuccess('Successfully logged out!'))
+};
+
 const emailValidation = async (req, res, next) => {
     const token = req.params.token;
     const result = await database.getAuth.get({
@@ -96,5 +102,6 @@ module.exports = {
     setDatabase,
     register,
     login,
+    logout,
     emailValidation
 }
