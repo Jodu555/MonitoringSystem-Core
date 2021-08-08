@@ -3,6 +3,7 @@ const { userRegisterSchema, userLoginSchema } = require('../database/schemas');
 const { sendVerificationMessage } = require('../utils/mailer')
 const { v4 } = require('uuid');
 const authManager = require('../utils/authManager');
+const bcrypt = require('bcryptjs');
 
 let database;
 const setDatabase = (_database) => {
@@ -25,8 +26,9 @@ const register = async (req, res, next) => {
             const token = generateVerificationToken(7);
             user.verificationToken = token;
             user.uuid = v4();
+            user.password = await bcrypt.hash(user.password, 8);
             await database.getAuth.create(user);
-            sendVerificationMessage(user.username, user.email, token);
+            // sendVerificationMessage(user.username, user.email, token);
 
             delete user.password;
             delete user.verificationToken;
@@ -44,16 +46,20 @@ const login = async (req, res, next) => {
         res.json(jsonError(validation.error.details[0].message));
     } else {
         const user = validation.value;
-        const result = await database.getAuth.get({ ...user, unique: true });
+        const result = await database.getAuth.get({ username: user.username, unique: true });
         if (result.length > 0) {
-            const obj = jsonSuccess('Successfully logged In');
-            const token = v4();
-            obj.token = token;
-            authManager.addToken(token, result[0]);
-            res.json(obj);
+            if (await bcrypt.compare(user.password, result[0].password)) {
+                const obj = jsonSuccess('Successfully logged In');
+                const token = v4();
+                obj.token = token;
+                authManager.addToken(token, result[0]);
+                res.json(obj);
+            } else {
+                res.json(jsonError('Invalid password!'));
+            }
         } else {
             const value = user.username ? 'username' : 'email';
-            res.json(jsonError('Invalid ' + value + ' and password'))
+            res.json(jsonError('Invalid ' + value + '!'));
         }
     }
 };
