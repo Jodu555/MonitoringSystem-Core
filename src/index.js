@@ -5,7 +5,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const dotenv = require('dotenv').config();
-
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.createDatabase(process.env.DB_HOST,
     process.env.DB_USER,
@@ -14,12 +13,8 @@ const database = Database.createDatabase(process.env.DB_HOST,
 database.connect();
 
 const { router: auth } = require('./routes/auth');
-const { router: serv, setDatabase: server_setDatabase } = require('./routes/data');
-const { router: data, setDatabase: data_setDatabase } = require('./routes/data');
+const { router: data } = require('./routes/data');
 const { jsonSuccess, jsonError } = require('./utils/jsonMessages');
-
-
-// const Database = require('./database/Database');
 const authManager = require('./utils/authManager');
 const messagingManager = require('./utils/messagingManager');
 
@@ -28,7 +23,6 @@ authManager.addToken('SECRET-DEV-KEY', {
 })
 
 // server_setDatabase(database);
-// data_setDatabase(database);
 
 const app = express();
 const server = http.createServer(app);
@@ -42,7 +36,7 @@ app.use(express.json());
 
 
 app.use('/auth', auth);
-app.use('/server', authManager.authentication, serv);
+// app.use('/server', authManager.authentication, serv);
 app.use('/data', authManager.authentication, data);
 
 app.get('/', authManager.authentication, (req, res) => {
