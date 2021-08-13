@@ -2,13 +2,10 @@ const { jsonSuccess, jsonError } = require('../utils/jsonMessages');
 const { userRegisterSchema, userLoginSchema } = require('../database/schemas');
 const { sendVerificationMessage } = require('../utils/mailer')
 const { v4 } = require('uuid');
+const { Database } = require('@jodu555/mysqlapi');
+const database = Database.getDatabase();
 const authManager = require('../utils/authManager');
 const bcrypt = require('bcryptjs');
-
-let database;
-const setDatabase = (_database) => {
-    database = _database;
-};
 
 const register = async (req, res, next) => {
     const validation = userRegisterSchema.validate(req.body);
@@ -19,7 +16,7 @@ const register = async (req, res, next) => {
         const search = { ...user }; //Spreading to disable the reference
         delete search.password;
         search.unique = true;
-        const result = await database.getAuth.get(search);
+        const result = await database.get('accounts').get(search);
 
         if (result.length == 0) {
             const obj = jsonSuccess('Registered');
@@ -27,7 +24,7 @@ const register = async (req, res, next) => {
             user.verificationToken = token;
             user.uuid = v4();
             user.password = await bcrypt.hash(user.password, 8);
-            await database.getAuth.create(user);
+            await database.get('accounts').create(user);
             // sendVerificationMessage(user.username, user.email, token);
 
             delete user.password;
@@ -46,7 +43,7 @@ const login = async (req, res, next) => {
         res.json(jsonError(validation.error.details[0].message));
     } else {
         const user = validation.value;
-        const result = await database.getAuth.get({ username: user.username, unique: true });
+        const result = await database.get('accounts').get({ username: user.username, unique: true });
         if (result.length > 0) {
             if (await bcrypt.compare(user.password, result[0].password)) {
                 const obj = jsonSuccess('Successfully logged In');
@@ -72,13 +69,13 @@ const logout = async (req, res, next) => {
 
 const emailValidation = async (req, res, next) => {
     const token = req.params.token;
-    const result = await database.getAuth.get({
+    const result = await database.get('accounts').get({
         unique: true,
         verificationToken: token,
         verified: 'false',
     });
     if (result.length > 0) {
-        const user = await database.getAuth.update({ uuid: result[0].UUID }, { verified: 'true', verificationToken: '' });
+        const user = await database.get('accounts').update({ uuid: result[0].UUID }, { verified: 'true', verificationToken: '' });
         const response = jsonSuccess('Valid Token! Account verified!');
         response.user = user[0];
         delete response.user.password;
@@ -99,7 +96,6 @@ function generateVerificationToken(len) {
 };
 
 module.exports = {
-    setDatabase,
     register,
     login,
     logout,

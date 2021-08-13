@@ -4,12 +4,6 @@ const { jsonSuccess } = require('../utils/jsonMessages');
 const authManager = require('../utils/authManager');
 const router = express.Router();
 
-let database;
-function setDatabase(_database) {
-    database = _database;
-    controller.setDatabase(database);
-}
-
 router.get('/', (req, res) => {
     res.json(jsonSuccess('Auth-Router works just fine'));
 });
