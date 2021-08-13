@@ -13,6 +13,7 @@ const database = Database.createDatabase(process.env.DB_HOST,
 database.connect();
 
 const { router: auth } = require('./routes/auth');
+const { router: serv } = require('./routes/server');
 const { router: data } = require('./routes/data');
 const { jsonSuccess, jsonError } = require('./utils/jsonMessages');
 const authManager = require('./utils/authManager');
@@ -36,7 +37,7 @@ app.use(express.json());
 
 
 app.use('/auth', auth);
-// app.use('/server', authManager.authentication, serv);
+app.use('/server', authManager.authentication, serv);
 app.use('/data', authManager.authentication, data);
 
 app.get('/', authManager.authentication, (req, res) => {

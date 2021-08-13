@@ -1,14 +1,12 @@
 const { jsonSuccess, jsonError } = require('../utils/jsonMessages');
 const { serverCreationSchema } = require('../database/schemas');
 const { v4 } = require('uuid');
+const { Database } = require('@jodu555/mysqlapi');
+const database = Database.getDatabase();
 
-let database;
-const setDatabase = (_database) => {
-    database = _database;
-};
 
 const getAll = async (req, res, next) => {
-    const servers = await database.getServer.get({ account_UUID: req.credentials.user.UUID, });
+    const servers = await database.get('server').get({ account_UUID: req.credentials.user.UUID, });
     const response = jsonSuccess('Success');
     response.data = servers;
     res.json(response);
@@ -17,7 +15,7 @@ const getAll = async (req, res, next) => {
 
 const get = async (req, res, next) => {
     const uuid = req.params.uuid;
-    const servers = await database.getServer.get({ unique: true, account_UUID: req.credentials.user.UUID, UUID: uuid });
+    const servers = await database.get('server').get({ unique: true, account_UUID: req.credentials.user.UUID, UUID: uuid });
     const response = jsonSuccess('Success');
     response.data = servers;
     res.json(response);
@@ -38,9 +36,9 @@ const create = async (req, res, next) => {
         server.authorization_key = generateVerificationToken(5);
 
         //Check if server with name exists
-        const servers = await database.getServer.get({ unique: true, account_UUID: req.credentials.user.UUID, name: server.name });
+        const servers = await database.get('server').get({ unique: true, account_UUID: req.credentials.user.UUID, name: server.name });
         if (servers.length == 0) {
-            await database.getServer.create(server);
+            await database.get('server').create(server);
             const response = jsonSuccess('Success');
             response.data = server;
             res.json(response);
@@ -57,9 +55,9 @@ const patch = async (req, res, next) => {
         res.json(jsonError(validation.error.details[0].message));
     } else {
         const server = validation.value;
-        const servers = await database.getServer.get({ unique: true, account_UUID: req.credentials.user.UUID, uuid });
+        const servers = await database.get('server').get({ unique: true, account_UUID: req.credentials.user.UUID, uuid });
         if (servers.length > 0) {
-            const updated = await database.getServer.update({ unique: true, UUID: uuid, account_UUID: req.credentials.user.UUID }, { name: server.name });
+            const updated = await database.get('server').update({ unique: true, UUID: uuid, account_UUID: req.credentials.user.UUID }, { name: server.name });
             const response = jsonSuccess('Success');
             response.data = updated;
             res.json(response);
@@ -79,7 +77,6 @@ function generateVerificationToken(len) {
 };
 
 module.exports = {
-    setDatabase,
     getAll,
     get,
     create,
