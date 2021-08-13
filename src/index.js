@@ -23,8 +23,6 @@ authManager.addToken('SECRET-DEV-KEY', {
     UUID: '245aa5b8-7ddb-492b-8be1-e8d51b421dbf',
 })
 
-// server_setDatabase(database);
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);

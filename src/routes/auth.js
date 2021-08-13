@@ -14,5 +14,4 @@ router.get('/emailValidation/:token', controller.emailValidation);
 
 module.exports = {
     router,
-    setDatabase
 };
