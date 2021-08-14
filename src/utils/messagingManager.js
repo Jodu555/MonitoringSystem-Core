@@ -5,12 +5,12 @@ const CHANGE_DATA = 'CHANGE_DATA';
 
 const lookup_IPS = new Map();
 const clients = new Map();
+const { Database } = require('@jodu555/mysqlapi');
+const database = Database.getDatabase();
 
 let io = null;
-let database = null;
-function setup(_io, _database) {
+function setup(_io) {
     io = _io;
-    database = _database;
     startListening();
 }
 
@@ -25,35 +25,35 @@ function startListening() {
         });
 
         socket.on('data', async (data) => {
-            const servers = await database.getServer.get({ UUID: clients.get(socket.id).serverUUID });
+            const servers = await database.get('server').get({ UUID: clients.get(socket.id).serverUUID });
             if (!servers.length > 0) {
                 return;
             }
             const server = servers[0];
             if (data.type == PERSISTENT_DATA) {
 
-                const datas = await database.getData.get({ UUID: server.data_UUID });
+                const datas = await database.get('data').get({ UUID: server.data_UUID });
                 if (datas.length > 0) {
                     const obj = persistentDataToDatabaseModel(data);
                     delete obj.uptime;
-                    await database.getData.update({ UUID: server.data_UUID }, obj);
+                    await database.get('data').update({ UUID: server.data_UUID }, obj);
                 } else {
                     const obj = persistentDataToDatabaseModel(data);
                     obj.UUID = server.data_UUID;
-                    await database.getData.create();
+                    await database.get('data').create();
                 }
             } else if (data.type == CHANGE_DATA) {
                 console.log('Change:', data);
                 const obj = changeDataToDatabaseModel(data);
                 obj.server_UUID = server.UUID;
-                await database.getLog.create(obj);
-                await database.getData.update({ UUID: server.data_UUID }, { uptime: data.uptime });
+                await database.get('log').create(obj);
+                await database.get('data').update({ UUID: server.data_UUID }, { uptime: data.uptime });
             }
         });
 
         socket.on('auth', async (data) => {
             if (data.auth_token) {
-                const servers = await database.getServer.get({ authorization_key: data.auth_token });
+                const servers = await database.get('server').get({ authorization_key: data.auth_token });
                 if (servers.length > 0) {
                     clients.get(socket.id).serverUUID = servers[0].UUID;
                     socket.emit('auth', true);

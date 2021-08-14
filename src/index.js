@@ -26,7 +26,7 @@ authManager.addToken('SECRET-DEV-KEY', {
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-messagingManager.setup(io, database);
+messagingManager.setup(io);
 
 app.use(cors());
 app.use(morgan('tiny'));
