@@ -11,6 +11,7 @@ const database = Database.createDatabase(process.env.DB_HOST,
     process.env.DB_PASSWORD,
     process.env.DB_DATABASE);
 database.connect();
+require('./utils/tables').createTables();
 
 const { router: auth } = require('./routes/auth');
 const { router: serv } = require('./routes/server');
