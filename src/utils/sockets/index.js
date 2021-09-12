@@ -2,8 +2,6 @@ const { setupForSlave } = require('./slave');
 
 // const slave_lookup_IPS = new Map();
 // const slaves = new Map();
-const { Database } = require('@jodu555/mysqlapi');
-const database = Database.getDatabase();
 
 
 let io = null;
