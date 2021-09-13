@@ -1,8 +1,5 @@
 const { setupForSlave } = require('./slave');
-
-// const slave_lookup_IPS = new Map();
-// const slaves = new Map();
-
+const { setupForClient } = require('./client');
 
 let io = null;
 function setup(_io) {
@@ -18,8 +15,8 @@ function startListening() {
         socket.on('type', (data) => {
             if (data.type == 'slave')
                 setupForSlave(socket);
-            // if (data.type == 'client')
-            // setupForClient(socket);
+            if (data.type == 'client')
+                setupForClient(socket);
         });
     });
 

@@ -21,6 +21,7 @@ setInterval(() => {
 }, CHANGE_DataInterval);
 
 function setupForSlave(socket) {
+
     socket.on('disconnect', () => {
         console.log('Client disconnected');
         slaves.delete(socket.id);
@@ -40,6 +41,7 @@ function setupForSlave(socket) {
             socket.emit('auth', false);
         }
     });
+
     if (!slaves.has(socket.id)) {
         console.log(socket.id);
         slaves.set(socket.id, {
@@ -51,7 +53,6 @@ function setupForSlave(socket) {
     } else {
         socket.emit('auth', false);
     }
-
 }
 
 async function dataIncome(socket, data) {
