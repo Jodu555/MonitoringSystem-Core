@@ -7,7 +7,6 @@ const { Database } = require('@jodu555/mysqlapi');
 const database = Database.getDatabase();
 
 const slaves = new Map();
-const slave_lookup_IPS = new Map();
 
 setInterval(() => {
     slaves.forEach((info, id) => {
@@ -24,7 +23,6 @@ setInterval(() => {
 function setupForSlave(socket) {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
-        slave_lookup_IPS.delete(socket.handshake.address);
         slaves.delete(socket.id);
     });
 
@@ -42,9 +40,8 @@ function setupForSlave(socket) {
             socket.emit('auth', false);
         }
     });
-
-    if (!slave_lookup_IPS.has(socket.handshake.address)) {
-        slave_lookup_IPS.set(socket.handshake.address, socket);
+    if (!slaves.has(socket.id)) {
+        console.log(socket.id);
         slaves.set(socket.id, {
             socket: socket,
             socketID: socket.id,
@@ -54,6 +51,7 @@ function setupForSlave(socket) {
     } else {
         socket.emit('auth', false);
     }
+
 }
 
 async function dataIncome(socket, data) {
