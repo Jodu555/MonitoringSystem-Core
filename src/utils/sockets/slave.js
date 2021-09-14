@@ -21,7 +21,6 @@ setInterval(() => {
 }, CHANGE_DataInterval);
 
 function setupForSlave(socket) {
-    //TODO: Added the force for authentication!
     socket.on('disconnect', () => {
         console.log('Slave disconnected');
         slaves.delete(socket.id);
@@ -34,6 +33,7 @@ function setupForSlave(socket) {
             const servers = await database.get('server').get({ authorization_key: data.auth_token });
             if (servers.length > 0) {
                 slaves.get(socket.id).serverUUID = servers[0].UUID;
+                slaves.get(socket.id).authenticated = true;
                 socket.emit('auth', true);
                 socket.emit('action', PERSISTENT_DATA);
             }
@@ -48,6 +48,7 @@ function setupForSlave(socket) {
             socketID: socket.id,
             socketIP: socket.handshake.address,
             serverUUID: null,
+            authenticated: false,
         });
     } else {
         socket.emit('auth', false);
@@ -55,13 +56,14 @@ function setupForSlave(socket) {
 }
 
 async function dataIncome(socket, data) {
-    if (!slaves.get(socket.id).serverUUID)
+    if (!slaves.get(socket.id).authenticated) {
         socket.emit('auth', false);
-    const servers = await database.get('server').get({ UUID: slaves.get(socket.id).serverUUID });
-    if (!servers.length > 0) {
+        return
+    }
+    const server = await database.get('server').getOne({ UUID: slaves.get(socket.id).serverUUID });
+    if (!server) {
         return;
     }
-    const server = servers[0];
     if (data.type == PERSISTENT_DATA) {
         const datas = await database.get('data').get({ UUID: server.data_UUID });
         if (datas.length > 0) {
