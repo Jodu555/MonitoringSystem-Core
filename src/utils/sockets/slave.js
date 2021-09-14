@@ -47,7 +47,7 @@ function setupForSlave(socket) {
             socket: socket,
             socketID: socket.id,
             socketIP: socket.handshake.address,
-            serverUUID: '',
+            serverUUID: null,
         });
     } else {
         socket.emit('auth', false);
@@ -55,6 +55,8 @@ function setupForSlave(socket) {
 }
 
 async function dataIncome(socket, data) {
+    if (!slaves.get(socket.id).serverUUID)
+        socket.emit('auth', false);
     const servers = await database.get('server').get({ UUID: slaves.get(socket.id).serverUUID });
     if (!servers.length > 0) {
         return;
