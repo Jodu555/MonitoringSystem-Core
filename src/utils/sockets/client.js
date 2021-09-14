@@ -11,7 +11,7 @@ function setupForClient(socket) {
         clients.delete(socket.id);
     });
 
-    //Emits when a player changes the server view
+
     socket.on('subscribe', async (data) => {
         const server = await database.get('server').getOne({
             unique: true,
