@@ -1,7 +1,7 @@
 const express = require('express');
-const controller = require('./auth.controller');
-const { jsonSuccess } = require('../utils/jsonMessages');
-const authManager = require('../utils/authManager');
+const controller = require('./controller');
+const { jsonSuccess } = require('../../utils/jsonMessages');
+const authManager = require('../../utils/authManager');
 const router = express.Router();
 
 router.get('/', (req, res) => {

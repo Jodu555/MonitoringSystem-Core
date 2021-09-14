@@ -1,10 +1,10 @@
-const { jsonSuccess, jsonError } = require('../utils/jsonMessages');
-const { userRegisterSchema, userLoginSchema } = require('../database/schemas');
-const { sendVerificationMessage } = require('../utils/mailer')
+const { jsonSuccess, jsonError } = require('../../utils/jsonMessages');
+const { userRegisterSchema, userLoginSchema } = require('../../database/schemas');
+const { sendVerificationMessage } = require('../../utils/mailer')
 const { v4 } = require('uuid');
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.getDatabase();
-const authManager = require('../utils/authManager');
+const authManager = require('../../utils/authManager');
 const bcrypt = require('bcryptjs');
 
 const register = async (req, res, next) => {

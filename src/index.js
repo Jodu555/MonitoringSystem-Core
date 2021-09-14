@@ -13,9 +13,9 @@ const database = Database.createDatabase(process.env.DB_HOST,
 database.connect();
 require('./utils/tables').createTables();
 
-const { router: auth } = require('./routes/auth');
-const { router: serv } = require('./routes/server');
-const { router: data } = require('./routes/data');
+const { router: auth } = require('./routes/auth/index');
+const { router: serv } = require('./routes/server/index');
+const { router: data } = require('./routes/data/index');
 const { jsonSuccess, jsonError } = require('./utils/jsonMessages');
 const messagingManager = require('./utils/sockets/index');
 const authManager = require('./utils/authManager');

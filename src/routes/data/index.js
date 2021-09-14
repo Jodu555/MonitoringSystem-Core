@@ -1,5 +1,5 @@
 const express = require('express');
-const controller = require('./data.controller');
+const controller = require('./controller');
 const router = express.Router();
 
 router.get('/:uuid', controller.get); //Get by UUID
