@@ -13,6 +13,7 @@ function setupForClient(socket) {
 
     //Emits when a player changes the server view
     socket.on('subscribe', (data) => {
+        //TODO: Check if user owns the server!
         console.log('Client: ' + clients.get(socket.id).auth_token + ' Tried to subscribe to Server: ' + JSON.stringify(data));
         clients.get(socket.id).serverUUID = data.serverUUID;
     });

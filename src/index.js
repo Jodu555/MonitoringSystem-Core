@@ -17,11 +17,11 @@ const { router: auth } = require('./routes/auth');
 const { router: serv } = require('./routes/server');
 const { router: data } = require('./routes/data');
 const { jsonSuccess, jsonError } = require('./utils/jsonMessages');
+const messagingManager = require('./utils/sockets/index');
 const authManager = require('./utils/authManager');
 authManager.addToken('SECRET-DEV-KEY', {
     UUID: '245aa5b8-7ddb-492b-8be1-e8d51b421dbf',
 })
-const messagingManager = require('./utils/sockets/index');
 
 const app = express();
 const server = http.createServer(app);
