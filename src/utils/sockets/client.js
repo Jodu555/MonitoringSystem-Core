@@ -1,6 +1,6 @@
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.getDatabase();
-const authManager = require('./utils/authManager');
+const authManager = require('../authManager');
 
 const clients = new Map();
 
