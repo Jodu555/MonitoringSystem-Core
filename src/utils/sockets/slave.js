@@ -8,6 +8,8 @@ const database = Database.getDatabase();
 
 const slaves = new Map();
 
+let callFun = null;
+
 setInterval(() => {
     slaves.forEach((info, id) => {
         info.socket.emit('action', PERSISTENT_DATA);
@@ -81,6 +83,7 @@ async function dataIncome(socket, data) {
         await database.get('log').create(obj);
         await database.get('data').update({ UUID: server.data_UUID }, { uptime: data.uptime });
     }
+    callFun(server);
 }
 
 function changeDataToDatabaseModel(data) {
@@ -104,6 +107,11 @@ function persistentDataToDatabaseModel(data) {
     };
 }
 
+function setCallFunction(fn) {
+    callFun = fn;
+}
+
 module.exports = {
     setupForSlave,
+    setCallFunction,
 }

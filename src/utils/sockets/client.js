@@ -1,9 +1,13 @@
 const { Database } = require('@jodu555/mysqlapi');
 const database = Database.getDatabase();
 const authManager = require('../authManager');
+const slave = require('./slave');
 
 const clients = new Map();
 
+slave.setCallFunction((server) => {
+
+})
 
 function setupForClient(socket) {
     socket.on('disconnect', () => {
