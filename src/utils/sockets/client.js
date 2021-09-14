@@ -13,6 +13,7 @@ function setupForClient(socket) {
 
     //Emits when a player changes the server view
     socket.on('subscribe', (data) => {
+        console.log('Client: ' + clients.get(socket.id).auth_token + ' Tried to subscribe to Server: ' + JSON.stringify(data));
         clients.get(socket.id).serverUUID = data.serverUUID;
     });
 
@@ -22,6 +23,7 @@ function setupForClient(socket) {
             clients.get(socket.id).authenticated = true;
             clients.get(socket.id).auth_token = data.token;
             clients.get(socket.id).user = user;
+            socket.emit('auth', true)
         } else {
             socket.emit('auth', false);
         }
