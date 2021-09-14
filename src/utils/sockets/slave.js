@@ -21,7 +21,7 @@ setInterval(() => {
 }, CHANGE_DataInterval);
 
 function setupForSlave(socket) {
-
+    //TODO: Added the force for authentication!
     socket.on('disconnect', () => {
         console.log('Slave disconnected');
         slaves.delete(socket.id);
@@ -72,7 +72,6 @@ async function dataIncome(socket, data) {
             await database.get('data').create(obj);
         }
     } else if (data.type == CHANGE_DATA) {
-        console.log('Change:', data);
         const obj = changeDataToDatabaseModel(data);
         obj.server_UUID = server.UUID;
         await database.get('log').create(obj);

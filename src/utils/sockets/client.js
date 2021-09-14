@@ -13,7 +13,7 @@ function setupForClient(socket) {
     //Emits when a player changes the server view
     socket.on('subscribe', (data) => {
         clients.get(socket.id).serverUUID = data.serverUUID;
-    })
+    });
 
 
     if (!clients.has(socket.id)) {
@@ -23,6 +23,7 @@ function setupForClient(socket) {
             socketIP: socket.handshake.address,
             serverUUID: '',
         });
+        socket.emit('auth', true);
     }
 }
 
