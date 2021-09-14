@@ -10,10 +10,13 @@ function setupForClient(socket) {
         clients.delete(socket.id);
     });
 
+    //Emits when a player changes the server view
+    socket.on('subscribe', (data) => {
+        clients.get(socket.id).serverUUID = data.serverUUID;
+    })
 
 
     if (!clients.has(socket.id)) {
-        console.log(socket.id);
         clients.set(socket.id, {
             socket: socket,
             socketID: socket.id,

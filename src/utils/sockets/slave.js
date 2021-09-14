@@ -23,7 +23,7 @@ setInterval(() => {
 function setupForSlave(socket) {
 
     socket.on('disconnect', () => {
-        console.log('Client disconnected');
+        console.log('Slave disconnected');
         slaves.delete(socket.id);
     });
 
@@ -43,7 +43,6 @@ function setupForSlave(socket) {
     });
 
     if (!slaves.has(socket.id)) {
-        console.log(socket.id);
         slaves.set(socket.id, {
             socket: socket,
             socketID: socket.id,
