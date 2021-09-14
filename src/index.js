@@ -38,6 +38,7 @@ app.use(morgan('tiny'));
 app.use(helmet());
 app.use(express.json());
 
+//TODO: Think about if all the client server communication should run over the sockets or if the initial data gets loaded by the HTTP routes
 
 app.use('/auth', auth);
 app.use('/server', authManager.authentication, serv);

@@ -5,16 +5,18 @@ const slave = require('./slave');
 
 const clients = new Map();
 
+//TODO: Fill this function with function
+// -> It gets called when a slave publishes a change for a server if its persistent or change DATA
+// -> The server object wich gets passed into is the object from the database
 slave.setCallFunction((server) => {
 
-})
+});
 
 function setupForClient(socket) {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
         clients.delete(socket.id);
     });
-
 
     socket.on('subscribe', async (data) => {
         const server = await database.get('server').getOne({
