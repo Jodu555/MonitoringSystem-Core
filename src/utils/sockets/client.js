@@ -23,7 +23,6 @@ function setupForClient(socket) {
         } else {
             socket.emit('message', { type: 'error', message: 'You dont own this Server!' });
         }
-
     });
 
     socket.on('auth', (data) => {

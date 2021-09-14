@@ -16,6 +16,18 @@ function createTables() {
         verificationToken: 'MEDIUMTEXT',
     });
 
+    database.createTable('server', {
+        options: {
+            K: ['account_UUID', 'data_UUID'],
+            PK: 'UUID',
+        },
+        UUID: 'varchar(64)',
+        account_UUID: 'varchar(64)',
+        name: 'TEXT',
+        authorization_key: 'TEXT',
+        data_UUID: 'varchar(64)',
+    });
+
 }
 
 module.exports = { createTables };
