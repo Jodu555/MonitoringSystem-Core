@@ -11,8 +11,9 @@ function setup(_io) {
 function startListening() {
 
     io.on('connection', (socket) => {
-        console.log('Client/Slave Connected');
+        console.log('Client/Slave Connected: ');
         socket.on('type', (data) => {
+            console.log('- ' + data.type);
             if (data.type == 'slave')
                 setupForSlave(socket);
             if (data.type == 'client')

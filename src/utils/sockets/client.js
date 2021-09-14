@@ -12,10 +12,18 @@ function setupForClient(socket) {
     });
 
     //Emits when a player changes the server view
-    socket.on('subscribe', (data) => {
-        //TODO: Check if user owns the server!
-        console.log('Client: ' + clients.get(socket.id).auth_token + ' Tried to subscribe to Server: ' + JSON.stringify(data));
-        clients.get(socket.id).serverUUID = data.serverUUID;
+    socket.on('subscribe', async (data) => {
+        const server = await database.get('server').getOne({
+            unique: true,
+            account_UUID: clients.get(socket.id).user.UUID,
+            UUID: data.serverUUID,
+        });
+        if (server) {
+            clients.get(socket.id).serverUUID = data.serverUUID;
+        } else {
+            socket.emit('message', { type: 'error', message: 'You dont own this Server!' });
+        }
+
     });
 
     socket.on('auth', (data) => {
