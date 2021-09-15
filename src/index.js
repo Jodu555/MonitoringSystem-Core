@@ -44,6 +44,10 @@ app.use('/auth', auth);
 app.use('/server', authManager.authentication, serv);
 app.use('/data', authManager.authentication, data);
 
+const { errorHandling, notFound } = require('./utils/middleware');
+app.use('*', notFound);
+app.use(errorHandling);
+
 app.get('/', authManager.authentication, (req, res) => {
     res.json(jsonSuccess('Basic Auth API works just fine!'));
 });
