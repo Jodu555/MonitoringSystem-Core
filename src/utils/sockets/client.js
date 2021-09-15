@@ -8,8 +8,12 @@ const clients = new Map();
 //TODO: Fill this function with function
 // -> It gets called when a slave publishes a change for a server if its persistent or change DATA
 // -> The server object wich gets passed into is the object from the database
-slave.setCallFunction((server) => {
-
+slave.setCallFunction((server, data) => {
+    clients.forEach((client, socketId) => {
+        if (client.authenticated && client.serverUUID == server.UUID) {
+            client.socket.emit('change', { server, data });
+        }
+    });
 });
 
 function setupForClient(socket) {

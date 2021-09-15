@@ -58,6 +58,7 @@ function setupForSlave(socket) {
 }
 
 async function dataIncome(socket, data) {
+    const changedData = [];
     if (!slaves.get(socket.id).authenticated) {
         socket.emit('auth', false);
         return
@@ -71,19 +72,19 @@ async function dataIncome(socket, data) {
         if (datas.length > 0) {
             const obj = persistentDataToDatabaseModel(data);
             delete obj.uptime;
-            await database.get('data').update({ UUID: server.data_UUID }, obj);
+            changedData.push(await database.get('data').update({ UUID: server.data_UUID }, obj));
         } else {
             const obj = persistentDataToDatabaseModel(data);
             obj.UUID = server.data_UUID;
-            await database.get('data').create(obj);
+            changedData.push(await database.get('data').create(obj));
         }
     } else if (data.type == CHANGE_DATA) {
         const obj = changeDataToDatabaseModel(data);
         obj.server_UUID = server.UUID;
-        await database.get('log').create(obj);
-        await database.get('data').update({ UUID: server.data_UUID }, { uptime: data.uptime });
+        changedData.push(await database.get('log').create(obj));
+        changedData.push(await database.get('data').update({ UUID: server.data_UUID }, { uptime: data.uptime }));
     }
-    callFun(server);
+    callFun(server, changedData);
 }
 
 function changeDataToDatabaseModel(data) {
