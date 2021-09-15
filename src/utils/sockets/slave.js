@@ -84,12 +84,19 @@ async function dataIncome(socket, data) {
         changedData.push(await database.get('log').create(obj));
         changedData.push(await database.get('data').update({ UUID: server.data_UUID }, { uptime: data.uptime }));
     }
-
+    let result = [];
     changedData.forEach((data) => {
+        if (Array.isArray(data)) {
+            result = result.concat(data)
+        } else {
+            result.push(data);
+        }
+    });
+    result.forEach(data => {
         data.type = data.UUID ? PERSISTENT_DATA : CHANGE_DATA
     });
 
-    callFun(server, changedData);
+    callFun(server, result);
 }
 
 function changeDataToDatabaseModel(data) {
