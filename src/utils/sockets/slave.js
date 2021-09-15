@@ -58,7 +58,7 @@ function setupForSlave(socket) {
 }
 
 async function dataIncome(socket, data) {
-    const changedData = [];
+    let changedData = [];
     if (!slaves.get(socket.id).authenticated) {
         socket.emit('auth', false);
         return
@@ -84,6 +84,11 @@ async function dataIncome(socket, data) {
         changedData.push(await database.get('log').create(obj));
         changedData.push(await database.get('data').update({ UUID: server.data_UUID }, { uptime: data.uptime }));
     }
+
+    changedData.forEach((data) => {
+        data.type = data.UUID ? PERSISTENT_DATA : CHANGE_DATA
+    });
+
     callFun(server, changedData);
 }
 
