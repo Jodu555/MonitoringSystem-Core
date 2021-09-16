@@ -30,9 +30,9 @@ function setupForClient(socket) {
         });
         if (server) {
             clients.get(socket.id).serverUUID = data.serverUUID;
-            socket.emit('message', { type: 'success', message: 'You Successfully subscribed to the Server!' });
+            sendMsg(socket, false, 'You Successfully subscribed to the Server!');
         } else {
-            socket.emit('message', { type: 'error', message: 'You dont own this Server!' });
+            sendMsg(socket, true, 'You dont own this Server!')
         }
     });
 
@@ -61,6 +61,10 @@ function setupForClient(socket) {
     } else {
         socket.emit('auth', false);
     }
+}
+
+function sendMsg(socket, error, msg) {
+    socket.emit('message', { type: error ? 'error' : 'success', msg });
 }
 
 
