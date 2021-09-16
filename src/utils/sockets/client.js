@@ -43,8 +43,10 @@ function setupForClient(socket) {
             clients.get(socket.id).auth_token = data.token;
             clients.get(socket.id).user = user;
             socket.emit('auth', true)
+            sendMsg(socket, false, 'Scuccessfully authenticated!');
         } else {
             socket.emit('auth', false);
+            sendMsg(socket, false, 'Error whilst Authentication!');
         }
     });
 
