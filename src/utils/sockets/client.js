@@ -2,6 +2,8 @@ const { Database } = require('@jodu555/mysqlapi');
 const database = Database.getDatabase();
 const authManager = require('../authManager');
 const slave = require('./slave');
+const PERSISTENT_DATA = 'PERSISTENT_DATA';
+const CHANGE_DATA = 'CHANGE_DATA';
 
 const clients = new Map();
 
@@ -17,7 +19,7 @@ slave.setCallFunction((server, data) => {
 });
 
 function getLatestLogData(uuid) {
-    const query = 'SELECT * FROM log WHERE UUID=? ORDER BY time DESC LIMIT 1';
+    const query = 'SELECT * FROM log WHERE SERVER_UUID=? ORDER BY time DESC LIMIT 1';
     return new Promise(async (resolve, reject) => {
         await database.connection.query(query, [uuid], async (error, results, fields) => {
             if (error)
@@ -33,7 +35,9 @@ function getLatestLogData(uuid) {
 async function sendFirstTimeData(socket, server) {
     const data = await database.get('data').getOne({ UUID: server.data_UUID });
     const log = await getLatestLogData(server.UUID);
-    console.log(server, data);
+    data.type = PERSISTENT_DATA;
+    log.type = CHANGE_DATA;
+    socket.emit('change', { server, data: [data, log] });
 }
 
 function setupForClient(socket) {
