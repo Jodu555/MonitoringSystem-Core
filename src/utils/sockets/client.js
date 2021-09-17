@@ -16,6 +16,26 @@ slave.setCallFunction((server, data) => {
     });
 });
 
+function getLatestLogData(uuid) {
+    const query = 'SELECT * FROM log WHERE UUID=? ORDER BY time DESC LIMIT 1';
+    return new Promise(async (resolve, reject) => {
+        await database.connection.query(query, [uuid], async (error, results, fields) => {
+            if (error)
+                throw error;
+            if (results.length == 0) resolve(null);
+            await results.forEach((result) => {
+                resolve(result);
+            });
+        });
+    });
+}
+
+async function sendFirstTimeData(socket, server) {
+    const data = await database.get('data').getOne({ UUID: server.data_UUID });
+    const log = await getLatestLogData(server.UUID);
+    console.log(server, data);
+}
+
 function setupForClient(socket) {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
@@ -31,6 +51,7 @@ function setupForClient(socket) {
         if (server) {
             clients.get(socket.id).serverUUID = data.serverUUID;
             sendMsg(socket, false, 'You Successfully subscribed to the Server!');
+            sendFirstTimeData(socket, server)
         } else {
             sendMsg(socket, true, 'You dont own this Server!')
         }
