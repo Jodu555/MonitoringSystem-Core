@@ -61,7 +61,7 @@ function setupForClient(socket) {
         }
     });
 
-    socket.on('auth', (data) => {
+    socket.on('auth', async (data) => {
         const user = authManager.getUser(data.token);
         if (user) {
             clients.get(socket.id).authenticated = true;
@@ -69,6 +69,8 @@ function setupForClient(socket) {
             clients.get(socket.id).user = user;
             socket.emit('auth', true)
             //TODO: Send all servers the client owns
+            const servers = await database.get('server').get({ account_UUID: user.UUID });
+            socket.emit('servers', servers);
             sendMsg(socket, false, 'Scuccessfully authenticated!');
         } else {
             socket.emit('auth', false);
