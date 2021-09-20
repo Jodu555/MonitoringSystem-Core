@@ -68,6 +68,7 @@ function setupForClient(socket) {
             clients.get(socket.id).auth_token = data.token;
             clients.get(socket.id).user = user;
             socket.emit('auth', true)
+            //TODO: Send all servers the client owns
             sendMsg(socket, false, 'Scuccessfully authenticated!');
         } else {
             socket.emit('auth', false);
