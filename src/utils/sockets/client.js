@@ -68,10 +68,10 @@ function setupForClient(socket) {
             clients.get(socket.id).auth_token = data.token;
             clients.get(socket.id).user = user;
             socket.emit('auth', true)
-            //TODO: Send all servers the client owns
+            sendMsg(socket, false, 'Scuccessfully authenticated!');
+            //Emits the Server the client owns
             const servers = await database.get('server').get({ account_UUID: user.UUID });
             socket.emit('servers', servers);
-            sendMsg(socket, false, 'Scuccessfully authenticated!');
         } else {
             socket.emit('auth', false);
             sendMsg(socket, false, 'Error whilst Authentication!');
