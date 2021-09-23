@@ -28,6 +28,20 @@ function createTables() {
         data_UUID: 'varchar(64)',
     });
 
+    database.createTable('data', {
+        options: {
+            PK: 'UUID',
+        },
+        UUID: 'varchar(64)',
+        hostname: 'TEXT',
+        uptime: 'INT',
+        platform: 'TEXT',
+        platform_type: 'TEXT',
+        username: 'TEXT',
+        homedir: 'TEXT',
+        ips: 'TEXT',
+    });
+
 }
 
 module.exports = { createTables };
