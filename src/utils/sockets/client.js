@@ -49,8 +49,8 @@ function setupForClient(socket) {
     socket.on('subscribe', async (data) => {
         const server = await database.get('server').getOne({
             unique: true,
-            account_UUID: clients.get(socket.id).user.UUID,
             UUID: data.serverUUID,
+            account_UUID: clients.get(socket.id).user.UUID,
         });
         if (server) {
             clients.get(socket.id).serverUUID = data.serverUUID;
