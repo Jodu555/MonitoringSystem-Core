@@ -7,10 +7,12 @@ function setup(_io) {
     startListening();
 }
 
+let connections = 0;
 
 function startListening() {
 
     io.on('connection', (socket) => {
+        connections++;
         console.log('Client/Slave Connected: ');
         socket.on('type', (data) => {
             console.log('- ' + data.type);
