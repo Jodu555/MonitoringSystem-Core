@@ -10,7 +10,7 @@ Database
 * [ ] Add in each table created_AT
 * [x] Add the server routes
 * [x] Add the data routes
-* [ ] Clarify the socket connection front to back to slave and so on
+* [x] Clarify the socket connection front to back to slave and so on
 
 ## Socket Explaination
 ### Client
