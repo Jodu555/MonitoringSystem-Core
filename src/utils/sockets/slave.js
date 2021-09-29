@@ -12,13 +12,15 @@ let callFun = null;
 
 setInterval(() => {
     slaves.forEach((info, id) => {
-        info.socket.emit('action', PERSISTENT_DATA);
+        if (info.authenticated)
+            info.socket.emit('action', PERSISTENT_DATA);
     });
 }, PERSISTENT_DataInterval);
 
 setInterval(() => {
     slaves.forEach((info, id) => {
-        info.socket.emit('action', CHANGE_DATA);
+        if (info.authenticated)
+            info.socket.emit('action', CHANGE_DATA);
     });
 }, CHANGE_DataInterval);
 
