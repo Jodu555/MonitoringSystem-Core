@@ -40,6 +40,8 @@ function setupForSlave(socket) {
                 slaves.get(socket.id).authenticated = true;
                 socket.emit('auth', true);
                 socket.emit('action', PERSISTENT_DATA);
+            } else {
+                socket.emit('auth', false);
             }
         } else {
             socket.emit('auth', false);
